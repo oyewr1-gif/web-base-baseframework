@@ -3,12 +3,12 @@ class Produk extends Controller {
     private $produkModel;
 
     public function __construct() {
-        $this->produkModel = $this->model('Produk');
+        $this->produkModel = $this->model('mProduk');
     }
 
     // GET /produk - Mengambil semua data
     public function index() {
-        echo "index"; exit;
+        //echo "Produk\r\n"; 
         if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
             $this->response(405, ['message' => 'Method Not Allowed']);
         }

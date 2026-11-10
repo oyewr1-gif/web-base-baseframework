@@ -1,5 +1,5 @@
 <?php
-class Produk extends Model {
+class mProduk extends Model {
     protected $table = 'produk'; 
     
     // Tentukan cetakan (skema) SQL untuk tabel ini jika belum ada
