@@ -3,6 +3,7 @@ class Model {
     protected $db;
     protected $table;
     protected $schema; // Properti baru untuk menampung query pembuat tabel
+    protected $fillable = []; // Daftar kolom yang diizinkan untuk diisi/diubah
 
     public function __construct() {
         $host = $_ENV['DB_HOST'];
@@ -44,6 +45,22 @@ class Model {
         }
     }
 
+     // Menyaring input berdasarkan $fillable dan mengamankan nama kolom
+    protected function filterFillable($data) {
+        if (empty($this->fillable)) {
+            throw new Exception("Properti \$fillable belum didefinisikan pada Model " . get_class($this));
+        }
+
+        $filtered = [];
+        foreach ($data as $key => $value) {
+            // Pastikan nama kolom hanya mengandung huruf, angka, dan underscore (Anti SQL Injection)
+            if (in_array($key, $this->fillable) && preg_match('/^[a-zA-Z0-9_]+$/', $key)) {
+                $filtered[$key] = $value;
+            }
+        }
+        return $filtered;
+    }
+
     public function all() {
         $stmt = $this->db->query("SELECT * FROM {$this->table}");
         return $stmt->fetchAll();
@@ -56,17 +73,23 @@ class Model {
     }
 
     public function create($data) {
-        $fields = implode(", ", array_keys($data));
-        $placeholders = ":" . implode(", :", array_keys($data));
+        $cleanData = $this->filterFillable($data);
+        if (empty($cleanData)) return false;
+
+        $fields = implode(", ", array_keys($cleanData));
+        $placeholders = ":" . implode(", :", array_keys($cleanData));
         
         $sql = "INSERT INTO {$this->table} ($fields) VALUES ($placeholders)";
         $stmt = $this->db->prepare($sql);
-        return $stmt->execute($data);
+        return $stmt->execute($cleanData);
     }
 
     public function update($id, $data) {
+        $cleanData = $this->filterFillable($data);
+        if (empty($cleanData)) return false;
+
         $querySet = "";
-        foreach ($data as $key => $value) {
+        foreach ($cleanData as $key => $value) {
             $querySet .= "$key = :$key, ";
         }
         $querySet = rtrim($querySet, ", ");
@@ -75,7 +98,7 @@ class Model {
         $stmt = $this->db->prepare($sql);
         
         $data['id'] = $id;
-        return $stmt->execute($data);
+        return $stmt->execute($cleanData);
     }
 
     public function delete($id) {

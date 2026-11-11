@@ -1,6 +1,8 @@
 <?php
 class mProduk extends Model {
     protected $table = 'produk'; 
+    // Hanya kolom 'nama' dan 'harga' yang boleh diisi melalui API
+    protected $fillable = ['nama', 'harga']; 
     
     // Tentukan cetakan (skema) SQL untuk tabel ini jika belum ada
     protected $schema = "

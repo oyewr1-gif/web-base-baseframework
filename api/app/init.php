@@ -12,6 +12,10 @@ DotEnv::load(ROOT_PATH);
 require_once 'core/ErrorHandler.php';
 ErrorHandler::register();
 
+// Aktifkan Rate Limiter global (Maksimal 60 request per menit per IP)
+require_once 'core/RateLimiter.php';
+RateLimiter::check(60, 60);
+
 // Jalankan fungsi autoloader otomatis
 spl_autoload_register(function ($className) {
     // Tentukan direktori tempat mencari class

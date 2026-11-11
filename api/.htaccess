@@ -1,11 +1,16 @@
 <IfModule mod_rewrite.c>
+    Options -MultiViews
     RewriteEngine On
 
-    # Teruskan header Authorization ke PHP (Wajib untuk PHP-FPM / FastCGI di Linux/cPanel)
+    # Teruskan header Authorization ke PHP (untuk JWT)
     RewriteCond %{HTTP:Authorization} ^(.*)
     RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
 
+    # Tangani akses langsung ke root folder (misal: /api/) agar tetap masuk ke public/index.php
+    RewriteRule ^$ public/index.php [L]
+
+    # Jika file atau folder nyata tidak ditemukan, arahkan ke public/index.php dengan parameter url
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^(.*)$ public/index.php [QSA,L]
+    RewriteRule ^(.*)$ public/index.php?url=$1 [QSA,L]
 </IfModule>

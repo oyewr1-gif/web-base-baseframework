@@ -5,9 +5,11 @@ header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+header("X-Content-Type-Options: nosniff");
+header("X-Frame-Options: DENY");
 
 // Definisikan ROOT_PATH untuk mendeteksi folder utama tempat file .env berada
-define('ROOT_PATH', dirname(__DIR__) . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR);
+define('ROOT_PATH', dirname(__DIR__) . DIRECTORY_SEPARATOR   . DIRECTORY_SEPARATOR);
 // Definisikan APP_PATH ke folder app induk secara absolut
 define('APP_PATH', ROOT_PATH . 'app' . DIRECTORY_SEPARATOR);
 //echo ROOT_PATH . "\r\n";

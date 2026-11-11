@@ -19,20 +19,23 @@ my-api/
 ├── app/
 │   ├── core/
 │   │   ├── App.php           # Sistem Routing URL utama
-│   │   ├── Controller.php    # Base Controller & JSON Response Handler
+│   │   ├── Controller.php    # Base Controller, Proteksi JWT Otomatis & CRUD Bawaan
 │   │   ├── DotEnv.php        # Pembaca konfigurasi file .env
 │   │   ├── ErrorHandler.php  # Penangkap error global ke format JSON
-│   │   ├── JWT.php           # Generator dan Validator token JWT
-│   │   ├── Model.php         # Base Model (Koneksi PDO, Auto-Migration & CRUD)
-│   │   └── Validator.php     # Mesin validasi input request
+│   │   ├── JWT.php           # Generator & Validator token JWT (HS256 + hash_equals)
+│   │   ├── Model.php         # Base Model (PDO, Auto-Migration, Filter \$fillable & CRUD)
+│   │   ├── RateLimiter.php   # Pembatasan kuota request per IP (Anti Brute-Force)
+│   │   └── Validator.php     # Mesin validasi & sanitasi input (Anti-XSS)
 │   │
 │   ├── controllers/
+│   │   ├── Auth.php          # Endpoint registrasi & login pengguna
 │   │   └── Produk.php        # Endpoint manajemen data produk
 │   │
 │   ├── models/
-│   │   └── Produk_model.php  # Skema tabel dan model data produk
+│   │   ├── Produk_model.php  # Skema tabel, \$fillable & model data produk
+│   │   └── User_model.php    # Skema tabel, \$fillable & model data pengguna
 │   │
-│   └── init.php              # Pemuat semua komponen core aplikasi
+│   └── init.php              # Pemuat terpusat semua komponen core aplikasi
 │
 ├── public/
 │   └── index.php             # Single Entry Point & Konfigurasi CORS
@@ -41,10 +44,14 @@ my-api/
 │   ├── JWTTest.php
 │   └── ValidatorTest.php
 │
-├── .env                      # Konfigurasi environment (Rahasia)
-├── .htaccess                 # URL Rewriting Apache
-└── README.md                 # Dokumentasi proyek
-```
+├── .env                      # Konfigurasi environment lokal (Diabaikan Git)
+├── .env.example              # Templat konfigurasi environment untuk tim
+├── .gitignore                # Daftar file/folder yang diabaikan Git
+├── .htaccess                 # URL Rewriting Apache & penerus header Authorization
+├── API_SPEC.md               # Spesifikasi teknis endpoint untuk tim Frontend/Mobile
+├── CHANGELOG.md              # Catatan riwayat perubahan versi proyek
+└── README.md                 # Dokumentasi utama proyek
+`
 
 ---
 
@@ -176,6 +183,15 @@ my-api/
     "message": "Unauthorized: Token tidak valid atau kedaluwarsa"
   }
   ```
+
+---
+
+
+## Panduan Pengembangan Modul Baru (Untuk Tim)
+
+Kerangka kerja ini menerapkan prinsip **Secure by Default**:
+1. **Model Baru:** Wajib mewarisi `Model`, mendefinisikan `$table`, `$schema`, dan daftar kolom yang diizinkan pada array `$fillable` untuk mencegah *Mass Assignment*.
+2. **Controller Baru:** Wajib mewarisi `Controller` dan memanggil `parent::__construct()`. Secara *default*, seluruh *endpoint* terkunci oleh token JWT. Gunakan properti `protected $exceptAuth = ['index', 'detail'];` jika ingin membuka akses publik pada *method* tertentu.
 
 ---
 

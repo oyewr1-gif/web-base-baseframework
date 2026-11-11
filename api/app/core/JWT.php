@@ -8,7 +8,6 @@ class JWT {
         return base64_decode(str_replace(['-', '_'], ['+', '/'], $text));
     }
 
-    // Fungsi membuat Token setelah user berhasil login
     public static function generate($payload) {
         $secret = $_ENV['JWT_SECRET'];
         $expiry = time() + (int)$_ENV['JWT_EXPIRY'];
@@ -26,21 +25,21 @@ class JWT {
         return $base64UrlHeader . "." . $base64UrlPayload . "." . $base64UrlSignature;
     }
 
-    // Fungsi memvalidasi Token yang dikirim di Header request klien
     public static function validateAndDecode() {
         $headers = getallheaders();
-        if (!isset($headers['Authorization'])) {
+        // Mendukung huruf besar/kecil pada key Authorization di berbagai web server
+        $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? null;
+        
+        if (!$authHeader) {
             return false;
         }
 
-        // Format header biasanya: "Bearer <token>"
-        $authHeader = $headers['Authorization'];
         $tokenParts = explode(" ", $authHeader);
-        if (count($tokenParts) !== 2 || strtolower($tokenParts[0]) !== 'bearer') {
+        if (count($tokenParts) !== 2 || strtolower($tokenParts) !== 'bearer') {
             return false;
         }
 
-        $jwt = $tokenParts[1];
+        $jwt = $tokenParts;
         $tokenSegments = explode(".", $jwt);
         if (count($tokenSegments) !== 3) {
             return false;
@@ -49,21 +48,20 @@ class JWT {
         list($base64UrlHeader, $base64UrlPayload, $base64UrlSignature) = $tokenSegments;
         $secret = $_ENV['JWT_SECRET'];
 
-        // Cek Signature
         $signature = hash_hmac('sha256', $base64UrlHeader . "." . $base64UrlPayload, $secret, true);
         $expectedSignature = self::base64UrlEncode($signature);
 
-        if ($base64UrlSignature !== $expectedSignature) {
-            return false; // Token dimodifikasi / tidak valid
+        // PERBAIKAN: Gunakan hash_equals untuk mencegah Timing Attack
+        if (!hash_equals($expectedSignature, $base64UrlSignature)) {
+            return false;
         }
 
         $payload = json_decode(self::base64UrlDecode($base64UrlPayload), true);
 
-        // Cek Waktu Kadaluarsa
         if (isset($payload['exp']) && $payload['exp'] < time()) {
-            return false; // Token kadaluarsa
+            return false;
         }
 
-        return $payload; // Kembalikan data user di dalam token
+        return $payload;
     }
 }
