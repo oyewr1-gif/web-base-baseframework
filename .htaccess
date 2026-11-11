@@ -8,8 +8,8 @@ DirectoryIndex index.php web-app/public/index.php
     RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
 
     # 1. Biarkan request ke api/ ditangani oleh router API
-    RewriteRule ^api/(.*)$ api/index.php [QSA,L]
-    RewriteRule ^api$ api/index.php [QSA,L]
+    RewriteRule ^api/(.*)$ api/public/index.php [QSA,L]
+    RewriteRule ^api$ api/public/index.php [QSA,L]
     
     # 2. Arahkan aset statis langsung ke public/
     RewriteRule ^css/(.*)$ public/css/$1 [L]

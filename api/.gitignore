@@ -1,0 +1,23 @@
+# Abaikan file konfigurasi rahasia lokal
+.env
+.env.local
+.env.*.local
+
+# Abaikan folder dependensi Composer (PHPUnit, dll)
+/vendor/
+composer.phar
+
+# Abaikan file cache dan log pengujian
+.phpunit.result.cache
+/tests/_output/
+
+# Abaikan file konfigurasi editor / IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Abaikan file sampah sistem operasi (Windows & macOS)
+.DS_Store
+Thumbs.db
+desktop.ini
