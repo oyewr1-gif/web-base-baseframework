@@ -15,7 +15,7 @@ Proyek ini adalah kerangka kerja (*framework*) REST API ringan berbasis **PHP Na
 ## Struktur Direktori
 
 ```text
-my-api/
+api/
 ├── app/
 │   ├── core/
 │   │   ├── App.php           # Sistem Routing URL utama
@@ -82,7 +82,7 @@ my-api/
 
 ## Dokumentasi Endpoint API
 
-**Base URL:** `http://localhost/my-api/public` (atau sesuaikan dengan *Virtual Host* lokal Anda).
+**Base URL:** `http://localhost/almunaframework/api` (atau sesuaikan dengan *Virtual Host* lokal Anda).
 
 ### 1. Menampilkan Semua Produk
 * **URL:** `/produk`
