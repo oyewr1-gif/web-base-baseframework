@@ -1,88 +1,46 @@
 <?php
-
-class App 
-{
-    // Mengatur default controller, method, dan parameter jika URL kosong
+class App {
+    protected $module = 'Home';
     protected $controller = 'HomeController';
     protected $method = 'index';
     protected $params = [];
 
-    public function __construct() 
-    {
+    public function __construct() {
         $url = $this->parseUrl();
+        //echo "App.php";
 
-        // 1. VALIDASI & PENENTUAN CONTROLLER
-        if (isset($url[0])) {
-            // Keamanan: Hanya izinkan karakter alfanumerik untuk mencegah Path Traversal (e.g., ../../)
-            $cleanController = preg_replace('/[^a-zA-Z0-9]/', '', $url[0]);
-            $controllerName = ucfirst($cleanController) . 'Controller';
-
-            // Periksa apakah file controller-nya benar-benar ada
-            // APP_PATH didefinisikan di index.php (e.g., D:/Data/web/almunaframework/app/)
-            if (file_exists(APP_PATH . 'controllers/' . $controllerName . '.php')) {
-                $this->controller = $controllerName;
-                unset($url[0]); // Hapus dari memori array URL
-            } else {
-                // Opsional: Arahkan ke halaman 404 jika controller tidak ditemukan
-                $this->show404();
+         // 1. Cek segmen pertama ($url[0]) sebagai nama Modul & Controller
+        if (!empty($url[0])) {
+            $modName = ucfirst(strtolower($url[0]));
+            $ctrlPath = APP_PATH . "/Modules/{$modName}/{$modName}Controller.php";
+            if (file_exists($ctrlPath)) {
+                $this->module = $modName;
+                $this->controller = "{$modName}Controller";
+                unset($url[0]);
             }
         }
 
-        // Memuat file controller yang terpilih
-        require_once APP_PATH . 'controllers/' . $this->controller . '.php';
-        
-        // Inisialisasi class controller (e.g., $this->controller = new HomeController)
+        // Instansiasi Controller (default: ProdukController)
+        //require_once __DIR__ . "/../Modules/{$this->module}/{$this->controller}.php";
         $this->controller = new $this->controller;
 
-        // 2. VALIDASI & PENENTUAN METHOD
-        if (isset($url[1])) {
-            $cleanMethod = preg_replace('/[^a-zA-Z0-9_]/', '', $url[1]);
-
-            // Keamanan: Periksa apakah method ada di dalam class tersebut DAN bisa dipanggil secara publik
-            if (method_exists($this->controller, $cleanMethod)) {
-                $this->method = $cleanMethod;
-                unset($url[1]);
-            } else {
-                $this->show404();
-            }
+        // 2. Cek segmen kedua ($url[1]) sebagai nama Method
+        if (!empty($url[1]) && method_exists($this->controller, $url[1])) {
+            $this->method = $url[1];
+            unset($url[1]);
         }
 
-        // 3. PENGAMBILAN PARAMETER
-        // Jika masih ada sisa array di URL, itu dianggap sebagai parameter (e.g., /id/5)
+        // 3. Sisa segmen menjadi parameter
         $this->params = $url ? array_values($url) : [];
-
-        // 4. EKSEKUSI JALUR (ZONA AMAN)
-        // Memanggil method di dalam controller sambil mengirimkan parameter secara aman
+        // Jalankan controller & method
         call_user_func_array([$this->controller, $this->method], $this->params);
     }
 
-    /**
-     * Membaca, membersihkan, dan memecah URL
-     */
-    private function parseUrl() 
-    {
+    private function parseUrl() {
         if (isset($_GET['url'])) {
-            // Bersihkan tanda slash (/) di akhir URL
-            $url = rtrim($_GET['url'], '/');
-            // Filter URL dari karakter ilegal (mencegah XSS via URL)
-            $url = filter_var($url, FILTER_SANITIZE_URL);
-            // Pecah menjadi array berdasarkan tanda slash (/)
-            return explode('/', $url);
+            $cleanUrl = Security::cleanInput(rtrim($_GET['url'], '/'));
+            return explode('/', filter_var($cleanUrl, FILTER_SANITIZE_URL));
         }
         return [];
-    }
-
-    /**
-     * Menampilkan Halaman Error 404 Not Found secara aman
-     */
-    private function show404() 
-    {
-        http_response_code(404);
-        if (file_exists(APP_PATH . 'views/errors/404.php')) {
-            require_once APP_PATH . 'views/errors/404.php';
-        } else {
-            echo "<h1>404 Not Found</h1><p>Halaman yang Anda cari tidak ditemukan.</p>";
-        }
-        exit; // Hentikan eksekusi script sepenuhnya
     }
 }

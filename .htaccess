@@ -1,4 +1,4 @@
-DirectoryIndex index.php web-app/public/index.php
+DirectoryIndex index.php public/index.php
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
@@ -16,8 +16,11 @@ DirectoryIndex index.php web-app/public/index.php
     RewriteRule ^js/(.*)$ public/js/$1 [L]
     RewriteRule ^img/(.*)$ public/img/$1 [L]
 
+    # Arahkan root URL kosong langsung ke index.php
+    RewriteRule ^$ public/index.php [QSA,L]
+    
     # 3. Arahkan seluruh route  ke public/index.php
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^(.*)$ public/index.php [QSA,L]
+    RewriteRule ^(.*)$ public/index.php?url=$1 [QSA,L]
 </IfModule>
