@@ -3,7 +3,7 @@
 Dokumen ini berisi rincian teknis *endpoint*, format *request*, kode status HTTP, dan struktur *response* untuk integrasi sisi klien (*Frontend* / *Mobile*).
 
 ## Informasi Umum
-* **Base URL (Lokal):** `http://localhost/my-api/public`
+* **Base URL (Lokal):** `http://localhost/almunaframework/api/`
 * **Format Data:** JSON (`application/json`)
 * **Mekanisme Otentikasi:** Bearer Token (JWT - HS256)
 * **Rate Limiting:** Maksimal **60 request per menit** per alamat IP. Informasi kuota dikirim melalui header `X-RateLimit-Limit`, `X-RateLimit-Remaining`, dan `X-RateLimit-Reset`.

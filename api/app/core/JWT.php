@@ -1,16 +1,20 @@
 <?php
-class JWT {
-    private static function base64UrlEncode($text) {
+class JWT
+{
+    private static function base64UrlEncode($text)
+    {
         return str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($text));
     }
 
-    private static function base64UrlDecode($text) {
+    private static function base64UrlDecode($text)
+    {
         return base64_decode(str_replace(['-', '_'], ['+', '/'], $text));
     }
 
-    public static function generate($payload) {
+    public static function generate($payload)
+    {
         $secret = $_ENV['JWT_SECRET'];
-        $expiry = time() + (int)$_ENV['JWT_EXPIRY'];
+        $expiry = time() + (int) $_ENV['JWT_EXPIRY'];
 
         $header = json_encode(['typ' => 'JWT', 'alg' => 'HS256']);
         $payload['exp'] = $expiry;
@@ -25,21 +29,23 @@ class JWT {
         return $base64UrlHeader . "." . $base64UrlPayload . "." . $base64UrlSignature;
     }
 
-    public static function validateAndDecode() {
+    public static function validateAndDecode()
+    {
         $headers = getallheaders();
         // Mendukung huruf besar/kecil pada key Authorization di berbagai web server
         $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? null;
-        
+        //$authHeader = self::getAuthorizationHeader();
+
         if (!$authHeader) {
             return false;
         }
 
         $tokenParts = explode(" ", $authHeader);
-        if (count($tokenParts) !== 2 || strtolower($tokenParts) !== 'bearer') {
+        if (count($tokenParts) !== 2 || strtolower($tokenParts[0]) !== 'bearer') {
             return false;
         }
 
-        $jwt = $tokenParts;
+        $jwt = $tokenParts[1];
         $tokenSegments = explode(".", $jwt);
         if (count($tokenSegments) !== 3) {
             return false;
@@ -64,4 +70,28 @@ class JWT {
 
         return $payload;
     }
+
+    private static function getAuthorizationHeader()
+    {
+        if (function_exists('getallheaders')) {
+            $headers = getallheaders();
+            if (isset($headers['Authorization'])) {
+                return $headers['Authorization'];
+            }
+            if (isset($headers['authorization'])) {
+                return $headers['authorization'];
+            }
+        }
+
+        // Cadangan pembacaan dari variabel $_SERVER (hasil rewrite .htaccess)
+        if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+            return $_SERVER['HTTP_AUTHORIZATION'];
+        }
+        if (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+            return $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
+        }
+
+        return null;
+    }
+
 }
