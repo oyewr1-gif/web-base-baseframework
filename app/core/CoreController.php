@@ -1,39 +1,60 @@
 <?php
-abstract class CoreController {
+abstract class CoreController
+{
     protected $module;
     protected $viewPath = '';
     protected $redirectPath = '';
 
     // Mapping input $_POST ke payload JSON API (di-override di child controller)
-    protected function mapPayload(array $cleanPost) {
+    protected function mapPayload(array $cleanPost)
+    {
         return $cleanPost;
     }
 
-    protected function view($view, $data = []) {
+    protected function view($view, $data = [], $useLayout = true)
+    {
         extract($data);
-        require_once __DIR__ . "/../Views/{$view}.php";
+        $viewFile = APP_PATH . "/Views/{$view}.php";
+
+        if (!file_exists($viewFile)) {
+            http_response_code(404);
+            die("View tidak ditemukan: " . Security::e($view));
+        }
+
+        if ($useLayout) {
+            require_once APP_PATH . '/Views/layouts/header.php';
+            require_once $viewFile;
+            require_once APP_PATH . '/Views/layouts/footer.php';
+        } else {
+            require_once $viewFile;
+        }
     }
 
-    protected function redirect($path) {
+
+    protected function redirect($path)
+    {
         header("Location: " . rtrim(Env::get('APP_URL'), '/') . $path);
         exit;
     }
 
-    protected function requireAuth() {
+    protected function requireAuth()
+    {
         if (empty($_SESSION['jwt_token'])) {
             $this->redirect('/auth/login');
         }
     }
 
     // --- CRUD TERPUSAT ---
-    public function index() {
+    public function index()
+    {
         $res = $this->module->getAll();
         $this->view("{$this->viewPath}/index", [
             'items' => $res['body']['data'] ?? []
         ]);
     }
 
-    public function create() {
+    public function create()
+    {
         $this->requireAuth();
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -50,7 +71,7 @@ abstract class CoreController {
             $this->view("{$this->viewPath}/form", [
                 'action' => 'create',
                 'errors' => $res['body']['errors'] ?? [$res['body']['message'] ?? 'Gagal menyimpan data'],
-                'old'    => $cleanPost
+                'old' => $cleanPost
             ]);
             return;
         }
@@ -58,7 +79,8 @@ abstract class CoreController {
         $this->view("{$this->viewPath}/form", ['action' => 'create']);
     }
 
-    public function edit($id) {
+    public function edit($id)
+    {
         $this->requireAuth();
         $id = (int) $id;
 
@@ -75,7 +97,7 @@ abstract class CoreController {
 
             $this->view("{$this->viewPath}/form", [
                 'action' => 'edit',
-                'item'   => array_merge(['id' => $id], $cleanPost),
+                'item' => array_merge(['id' => $id], $cleanPost),
                 'errors' => $res['body']['errors'] ?? [$res['body']['message'] ?? 'Gagal memperbarui data']
             ]);
             return;
@@ -84,11 +106,12 @@ abstract class CoreController {
         $detail = $this->module->getById($id);
         $this->view("{$this->viewPath}/form", [
             'action' => 'edit',
-            'item'   => $detail['body']['data'] ?? []
+            'item' => $detail['body']['data'] ?? []
         ]);
     }
 
-    public function delete($id) {
+    public function delete($id)
+    {
         $this->requireAuth();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             Security::verifyCsrf($_POST['csrf_token'] ?? '');

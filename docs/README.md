@@ -4,7 +4,8 @@ Framework Front-End ringan berbasis arsitektur **PHP MVC (Modular)** yang diranc
 
 ## Fitur Utama
 
-* **Modular MVC Architecture:** Pemisahan logika inti (`Core`), fitur bisnis (`Modules`), dan tampilan (`Views`).
+* **Modular MVC Architecture:** Pemisahan logika inti (`Core`), fitur bisnis (`Modules`), dan tampilan (`Views`) dengan modul `Home` sebagai halaman utama bawaan.
+* **Unified Layout System:** Rendering antarmuka terpusat melalui `layouts/header.php` dan `layouts/footer.php` di `CoreController`.
 * **Centralized CRUD:** Kelas induk `CoreController` dan `CoreModule` untuk mempercepat pembuatan modul baru tanpa duplikasi kode.
 * **JWT Session Management:** Penyimpanan token JWT di sisi server (`$_SESSION` dengan `HttpOnly` & `SameSite=Strict`) agar aman dari pencurian token via XSS.
 * **Multi-Layer Security:** Dilengkapi sanitasi input (`cleanInput`), output escaping (`Security::e`), proteksi CSRF, dan *Rate Limiter* terintegrasi.
@@ -59,4 +60,4 @@ Untuk menambahkan modul baru (misalnya modul `Kategori` yang terhubung ke `/kate
        }
    }
    ```
-4. Buat folder tampilan `app/Views/kategori/` berisi `index.php` dan `form.php`.
+4. Buat folder tampilan `app/Views/kategori/` berisi `index.php` dan `form.php` (tidak perlu menyertakan tag `<html>` atau `<head>` karena sudah otomatis dimuat oleh `layouts/header.php` dan `layouts/footer.php`).

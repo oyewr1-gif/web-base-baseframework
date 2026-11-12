@@ -4,6 +4,20 @@ Seluruh perubahan penting pada proyek **Almuna Front-End Framework** dicatat dal
 
 ## - 2026-11-12
 ### Ditambahkan
+* Modul `Home` (`app/Modules/Home/HomeController.php` dan `app/Views/home/index.php`) sebagai halaman beranda utama aplikasi.
+* Template *layout* global (`app/Views/layouts/header.php` dan `app/Views/layouts/footer.php`) untuk konsistensi navigasi dan tampilan antarmuka.
+* Parameter `$useLayout` pada `CoreController::view()` untuk membungkus *view* dengan *header* dan *footer* secara otomatis.
+* Halaman antarmuka lengkap untuk otentikasi (`auth/login.php`) dan formulir produk (`produk/index.php` serta `produk/form.php`).
+* Aturan `DirectoryIndex index.php` dan `RewriteRule ^$ index.php` pada `public/.htaccess` agar root URL tanpa nama modul dapat diakses langsung.
+
+### Diubah
+* Mengubah *default module* dan *default controller* pada `App.php` dari `ProdukController` menjadi `HomeController`.
+
+### Diperbaiki
+* Perbaikan pengaksesan indeks array `$url` pada `App.php` untuk mencegah galat `strtolower(): Argument #1 ($string) must be of type string, array given`.
+
+## - 2026-11-12
+### Ditambahkan
 * Konstanta global `APP_PATH` dan `ROOT_PATH` pada `app/init.php`.
 * Sistem *autoloading* otomatis (`spl_autoload_register`) untuk kelas di folder `app/Core/` dan `app/Modules/`.
 * Validasi keberadaan file *view* pada `CoreController::view()` menggunakan `APP_PATH`.
