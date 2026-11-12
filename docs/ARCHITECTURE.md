@@ -27,14 +27,14 @@ almuna-frontend/
 │   └── init.php             # Bootstrapper, Konstanta Global & Autoloader
 ├── public/
 │   └── index.php            # Entry point publik tunggal
-└── .htaccess            # URL Rewriting ke index.php (termasuk root URL)
 ├──.env                     # Variabel lingkungan (Environment)
+└── .htaccess            # URL Rewriting ke index.php (termasuk root URL)
 ```
 
 ## Siklus Hidup Permintaan (Request Lifecycle)
 
 1. **Entry Point (`public/index.php`):**
-   Semua permintaan HTTP masuk melalui `public/.htaccess` menuju `public/index.php`. File ini hanya bertugas memanggil `app/init.php` dan menginstansiasi kelas `App`.
+   Semua permintaan HTTP masuk melalui `.htaccess` menuju `public/index.php`. File ini hanya bertugas memanggil `app/init.php` dan menginstansiasi kelas `App`.
 2. **Inisialisasi (`app/init.php`):**
    * Mendefinisikan konstanta global `APP_PATH` dan `ROOT_PATH`.
    * Memulai sesi PHP dengan flag keamanan ketat (`HttpOnly` dan `SameSite=Strict`).
