@@ -1,4 +1,4 @@
-# Almuna Front-End Framework (PHP MVC)
+#  Front-End Framework (PHP MVC)
 
 Framework Front-End ringan berbasis arsitektur **PHP MVC (Modular)** yang dirancang khusus untuk mengonsumsi REST API dengan otentikasi **JSON Web Token (JWT)**.
 
@@ -19,18 +19,18 @@ Framework Front-End ringan berbasis arsitektur **PHP MVC (Modular)** yang diranc
 
 ## Instalasi & Konfigurasi
 
-1. **Clone atau salin proyek** ke direktori web server Anda (misalnya `htdocs/almuna-frontend`).
+1. **Clone atau salin proyek** ke direktori web server Anda (misalnya `htdocs/baseframework`).
 2. **Konfigurasi Environment:**
    Salin atau buat file `.env` di direktori utama (`ROOT_PATH/.env`) dan sesuaikan nilainya:
    ```env
-   APP_NAME="Almuna Frontend"
-   APP_URL="http://localhost/almuna-frontend/public"
-   API_BASE_URL="http://localhost/almunaframework/api"
+   APP_NAME=" Frontend"
+   APP_URL="http://localhost/baseframework/public"
+   API_BASE_URL="http://localhost/baseframework/api"
    RATE_LIMIT_MAX=60
    RATE_LIMIT_WINDOW=60
    ```
 3. **Arahkan Document Root:**
-   Pastikan akses web diarahkan ke folder `public/` (contoh: `http://localhost/almuna-frontend/public`).
+   Pastikan akses web diarahkan ke folder `public/` (contoh: `http://localhost/baseframework/public`).
 
 ## Cara Menambah Modul Baru
 
